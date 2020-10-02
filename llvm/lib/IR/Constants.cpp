@@ -2695,13 +2695,18 @@ unsigned ConstantDataSequential::getNumElements() const {
 
 
 uint64_t ConstantDataSequential::getElementByteSize() const {
-  return getElementType()->getPrimitiveSizeInBits()/8;
+  return getElementType()->getPrimitiveSizeInBits() / BYTE_SIZE;
 }
 
 /// Return the start of the specified element.
 const char *ConstantDataSequential::getElementPointer(unsigned Elt) const {
   assert(Elt < getNumElements() && "Invalid Elt");
+#ifdef WIDE_BYTE
+  uint64_t ElementByteSize = getElementType()->getPrimitiveSizeInBits()/8;
+  return DataElements+Elt*getElementByteSize()*ElementByteSize;
+#elif
   return DataElements+Elt*getElementByteSize();
+#endif
 }
 
 

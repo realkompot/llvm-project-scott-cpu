@@ -9585,6 +9585,22 @@ ABIArgInfo ARCABIInfo::classifyReturnType(QualType RetTy) const {
 
 } // End anonymous namespace.
 
+// Scott ABI implementation.
+
+namespace {
+ class ScottABIInfo : public DefaultABIInfo {
+ public:
+    ScottABIInfo(CodeGen::CodeGenTypes &CGT) : DefaultABIInfo(CGT) {}
+ };
+
+ class ScottTargetCodeGenInfo : public TargetCodeGenInfo {
+ public:
+     ScottTargetCodeGenInfo(CodeGenTypes &CGT)
+     : TargetCodeGenInfo(std::make_unique<ScottABIInfo>(CGT)) {}
+ };
+}
+
+
 //===----------------------------------------------------------------------===//
 // XCore ABI Implementation
 //===----------------------------------------------------------------------===//
@@ -10984,6 +11000,8 @@ const TargetCodeGenInfo &CodeGenModule::getTargetCodeGenInfo() {
     return SetCGInfo(new SPIRTargetCodeGenInfo(Types));
   case llvm::Triple::ve:
     return SetCGInfo(new VETargetCodeGenInfo(Types));
+  case llvm::Triple::scott:
+    return SetCGInfo(new ScottTargetCodeGenInfo(Types));
   }
 }
 

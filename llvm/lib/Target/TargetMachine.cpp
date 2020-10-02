@@ -168,6 +168,9 @@ bool TargetMachine::shouldAssumeDSOLocal(const Module &M,
   if (TT.isOSBinFormatXCOFF())
     return false;
 
+  if (TT.isScottEmulator())
+    return true;
+
   assert(TT.isOSBinFormatELF() || TT.isOSBinFormatWasm());
   assert(RM != Reloc::DynamicNoPIC);
 

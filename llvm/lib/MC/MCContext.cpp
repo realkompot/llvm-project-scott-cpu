@@ -25,6 +25,7 @@
 #include "llvm/MC/MCObjectFileInfo.h"
 #include "llvm/MC/MCSectionCOFF.h"
 #include "llvm/MC/MCSectionELF.h"
+#include "llvm/MC/MCSectionScottEmulator.h"
 #include "llvm/MC/MCSectionMachO.h"
 #include "llvm/MC/MCSectionWasm.h"
 #include "llvm/MC/MCSectionXCOFF.h"
@@ -32,6 +33,7 @@
 #include "llvm/MC/MCSymbol.h"
 #include "llvm/MC/MCSymbolCOFF.h"
 #include "llvm/MC/MCSymbolELF.h"
+#include "llvm/MC/MCSymbolScottEmulator.h"
 #include "llvm/MC/MCSymbolMachO.h"
 #include "llvm/MC/MCSymbolWasm.h"
 #include "llvm/MC/MCSymbolXCOFF.h"
@@ -190,6 +192,8 @@ MCSymbol *MCContext::createSymbolImpl(const StringMapEntry<bool> *Name,
       return new (Name, *this) MCSymbolMachO(Name, IsTemporary);
     case MCObjectFileInfo::IsWasm:
       return new (Name, *this) MCSymbolWasm(Name, IsTemporary);
+    case MCObjectFileInfo::IsScottEmulator:
+      return new (Name, *this) MCSymbolScottEmulator(Name, IsTemporary);
     case MCObjectFileInfo::IsXCOFF:
       return createXCOFFSymbolImpl(Name, IsTemporary);
     }
@@ -626,6 +630,28 @@ MCSectionWasm *MCContext::getWasmSection(const Twine &Section, SectionKind K,
   }
 
   return getWasmSection(Section, K, GroupSym, UniqueID, BeginSymName);
+}
+
+MCSectionScottEmulator *MCContext::getScottEmulatorSection(const Twine &Section, SectionKind Kind) {
+  auto IterBool = ScottEmulatorUniquingMap.insert(
+      std::make_pair(ScottEmulatorSectionKey{Section.str()}, nullptr));
+  auto &Entry = *IterBool.first;
+  if (!IterBool.second)
+    return Entry.second;
+
+  StringRef CachedName = Entry.first.SectionName;
+
+  MCSymbol *Begin = createSymbol(CachedName, false, false);
+
+  MCSectionScottEmulator *Result = new (ScottEmulatorAllocator.Allocate()) MCSectionScottEmulator(CachedName, Kind, Begin);
+  Entry.second = Result;
+
+  auto *F = new MCDataFragment();
+  Result->getFragmentList().insert(Result->begin(), F);
+  F->setParent(Result);
+  Begin->setFragment(F);
+
+  return Result;
 }
 
 MCSectionWasm *MCContext::getWasmSection(const Twine &Section, SectionKind Kind,

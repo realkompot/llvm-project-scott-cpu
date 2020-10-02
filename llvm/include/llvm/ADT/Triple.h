@@ -98,7 +98,8 @@ public:
     renderscript32, // 32-bit RenderScript
     renderscript64, // 64-bit RenderScript
     ve,             // NEC SX-Aurora Vector Engine
-    LastArchType = ve
+    scott,          // Scott CPU
+    LastArchType = scott
   };
   enum SubArchType {
     NoSubArch,
@@ -227,6 +228,7 @@ public:
     MachO,
     Wasm,
     XCOFF,
+    ScottEmulator
   };
 
 private:
@@ -613,6 +615,10 @@ public:
   /// Tests whether the OS uses the ELF binary format.
   bool isOSBinFormatELF() const {
     return getObjectFormat() == Triple::ELF;
+  }
+
+  bool isScottEmulator() const {
+    return getObjectFormat() == Triple::ScottEmulator;
   }
 
   /// Tests whether the OS uses the COFF binary format.

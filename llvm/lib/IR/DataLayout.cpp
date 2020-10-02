@@ -218,9 +218,9 @@ static unsigned getInt(StringRef R) {
 
 /// Convert bits into bytes. Assert if not a byte width multiple.
 static unsigned inBytes(unsigned Bits) {
-  if (Bits % 8)
+  if (Bits % BYTE_SIZE)
     report_fatal_error("number of bits must be a byte width multiple");
-  return Bits / 8;
+  return Bits / BYTE_SIZE;
 }
 
 static unsigned getAddrSpace(StringRef R) {

@@ -221,7 +221,9 @@ public:
   uint64_t getSize() const { return Size; }
 
   /// Return the size in bits of the memory reference.
-  uint64_t getSizeInBits() const { return Size * 8; }
+  uint64_t getSizeInBits() const {
+    return Size * BYTE_SIZE;
+  }
 
   LLVM_ATTRIBUTE_DEPRECATED(uint64_t getAlignment() const,
                             "Use getAlign instead");

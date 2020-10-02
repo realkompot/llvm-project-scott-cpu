@@ -394,17 +394,17 @@ public:
   /// FIXME: The defaults need to be removed once all of
   /// the backends/clients are updated.
   unsigned getPointerSizeInBits(unsigned AS = 0) const {
-    return getPointerSize(AS) * 8;
+    return getPointerSize(AS) * BYTE_SIZE;
   }
 
   /// Returns the maximum pointer size over all address spaces.
   unsigned getMaxPointerSizeInBits() const {
-    return getMaxPointerSize() * 8;
+    return getMaxPointerSize() * BYTE_SIZE;
   }
 
   /// Size in bits of index used for address calculation in getelementptr.
   unsigned getIndexSizeInBits(unsigned AS) const {
-    return getIndexSize(AS) * 8;
+    return getIndexSize(AS) * BYTE_SIZE;
   }
 
   /// Layout pointer size, in bits, based on the type.  If this function is
@@ -419,7 +419,7 @@ public:
   unsigned getIndexTypeSizeInBits(Type *Ty) const;
 
   unsigned getPointerTypeSize(Type *Ty) const {
-    return getPointerTypeSizeInBits(Ty) / 8;
+    return getPointerTypeSizeInBits(Ty) / BYTE_SIZE;
   }
 
   /// Size examples:
@@ -457,7 +457,7 @@ public:
   /// For example, returns 5 for i36 and 10 for x86_fp80.
   TypeSize getTypeStoreSize(Type *Ty) const {
     TypeSize BaseSize = getTypeSizeInBits(Ty);
-    return { (BaseSize.getKnownMinSize() + 7) / 8, BaseSize.isScalable() };
+    return { (BaseSize.getKnownMinSize() + (BYTE_SIZE - 1)) / BYTE_SIZE, BaseSize.isScalable() };
   }
 
   /// Returns the maximum number of bits that may be overwritten by
@@ -468,7 +468,7 @@ public:
   ///
   /// For example, returns 40 for i36 and 80 for x86_fp80.
   TypeSize getTypeStoreSizeInBits(Type *Ty) const {
-    return 8 * getTypeStoreSize(Ty);
+    return BYTE_SIZE * getTypeStoreSize(Ty);
   }
 
   /// Returns true if no extra padding bits are needed when storing the
@@ -501,7 +501,7 @@ public:
   /// This is the amount that alloca reserves for this type. For example,
   /// returns 96 or 128 for x86_fp80, depending on alignment.
   TypeSize getTypeAllocSizeInBits(Type *Ty) const {
-    return 8 * getTypeAllocSize(Ty);
+    return BYTE_SIZE * getTypeAllocSize(Ty);
   }
 
   /// Returns the minimum ABI-required alignment for the specified type.
@@ -620,7 +620,9 @@ class StructLayout {
 public:
   uint64_t getSizeInBytes() const { return StructSize; }
 
-  uint64_t getSizeInBits() const { return 8 * StructSize; }
+  uint64_t getSizeInBits() const {
+    return BYTE_SIZE * StructSize;
+  }
 
   Align getAlignment() const { return StructAlignment; }
 
@@ -638,7 +640,7 @@ public:
   }
 
   uint64_t getElementOffsetInBits(unsigned Idx) const {
-    return getElementOffset(Idx) * 8;
+    return getElementOffset(Idx) * BYTE_SIZE;
   }
 
 private:

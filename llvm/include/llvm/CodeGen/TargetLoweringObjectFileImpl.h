@@ -212,6 +212,21 @@ public:
                                        const TargetMachine &TM) const override;
 };
 
+
+class TargetLoweringObjectFileScottEmulator : public TargetLoweringObjectFile {
+  mutable unsigned NextUniqueID = 0;
+
+public:
+  TargetLoweringObjectFileScottEmulator() = default;
+  ~TargetLoweringObjectFileScottEmulator() override = default;
+
+  MCSection *getExplicitSectionGlobal(const GlobalObject *GO, SectionKind Kind,
+                                      const TargetMachine &TM) const override;
+
+  MCSection *SelectSectionForGlobal(const GlobalObject *GO, SectionKind Kind,
+                                    const TargetMachine &TM) const override;
+};
+
 class TargetLoweringObjectFileXCOFF : public TargetLoweringObjectFile {
 public:
   TargetLoweringObjectFileXCOFF() = default;

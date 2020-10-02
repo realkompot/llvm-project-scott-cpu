@@ -75,6 +75,7 @@ StringRef Triple::getArchTypeName(ArchType Kind) {
   case x86:            return "i386";
   case x86_64:         return "x86_64";
   case xcore:          return "xcore";
+  case scott:          return "scott";
   }
 
   llvm_unreachable("Invalid ArchType!");
@@ -151,6 +152,7 @@ StringRef Triple::getArchTypePrefix(ArchType Kind) {
   case riscv64:     return "riscv";
 
   case ve:          return "ve";
+  case scott:       return "scott";
   }
 }
 
@@ -401,6 +403,7 @@ static Triple::ArchType parseArch(StringRef ArchName) {
     .Case("aarch64_be", Triple::aarch64_be)
     .Case("aarch64_32", Triple::aarch64_32)
     .Case("arc", Triple::arc)
+    .Case("scott", Triple::scott)
     .Case("arm64", Triple::aarch64)
     .Case("arm64_32", Triple::aarch64_32)
     .Case("arm", Triple::arm)
@@ -646,6 +649,7 @@ static StringRef getObjectFormatTypeName(Triple::ObjectFormatType Kind) {
   case Triple::MachO: return "macho";
   case Triple::Wasm:  return "wasm";
   case Triple::XCOFF: return "xcoff";
+  case Triple::ScottEmulator: return "scott";
   }
   llvm_unreachable("unknown object format type");
 }
@@ -707,6 +711,9 @@ static Triple::ObjectFormatType getDefaultFormat(const Triple &T) {
   case Triple::ve:
   case Triple::xcore:
     return Triple::ELF;
+
+  case Triple::scott:
+    return Triple::ScottEmulator;
 
   case Triple::ppc64:
   case Triple::ppc:
@@ -1236,6 +1243,7 @@ static unsigned getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
 
   case llvm::Triple::avr:
   case llvm::Triple::msp430:
+  case llvm::Triple::scott:
     return 16;
 
   case llvm::Triple::aarch64_32:
@@ -1318,6 +1326,7 @@ Triple Triple::get32BitArchVariant() const {
   case Triple::ppc64le:
   case Triple::systemz:
   case Triple::ve:
+  case Triple::scott:
     T.setArch(UnknownArch);
     break;
 
@@ -1387,6 +1396,7 @@ Triple Triple::get64BitArchVariant() const {
   case Triple::tce:
   case Triple::tcele:
   case Triple::xcore:
+  case Triple::scott:
     T.setArch(UnknownArch);
     break;
 

@@ -10,6 +10,7 @@ add_llvm_component_library(LLVMBinaryFormat
   MsgPackWriter.cpp
   Wasm.cpp
   XCOFF.cpp
+  ScottEmulator.cpp
 
   ADDITIONAL_HEADER_DIRS
   ${LLVM_MAIN_INCLUDE_DIR}/llvm/BinaryFormat

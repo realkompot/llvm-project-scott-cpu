@@ -22060,7 +22060,7 @@ bool DAGCombiner::parallelizeChainedStores(StoreSDNode *St) {
     return false;
 
   // Add ST's interval.
-  Intervals.insert(0, (St->getMemoryVT().getSizeInBits() + 7) / 8, Unit);
+  Intervals.insert(0, (St->getMemoryVT().getSizeInBits() + (BYTE_SIZE - 1)) / BYTE_SIZE, Unit);
 
   while (StoreSDNode *Chain = dyn_cast<StoreSDNode>(STChain->getChain())) {
     // If the chain has more than one use, then we can't reorder the mem ops.
@@ -22076,7 +22076,7 @@ bool DAGCombiner::parallelizeChainedStores(StoreSDNode *St) {
     int64_t Offset;
     if (!BasePtr.equalBaseIndex(Ptr, DAG, Offset))
       break;
-    int64_t Length = (Chain->getMemoryVT().getSizeInBits() + 7) / 8;
+    int64_t Length = (Chain->getMemoryVT().getSizeInBits() + (BYTE_SIZE - 1)) / BYTE_SIZE;
     // Make sure we don't overlap with other intervals by checking the ones to
     // the left or right before inserting.
     auto I = Intervals.find(Offset);

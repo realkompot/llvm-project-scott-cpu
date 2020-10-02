@@ -416,8 +416,8 @@ public:
   /// Return the alignment of '_Bool' and C++ 'bool' for this target.
   unsigned getBoolAlign() const { return BoolAlign; }
 
-  unsigned getCharWidth() const { return 8; } // FIXME
-  unsigned getCharAlign() const { return 8; } // FIXME
+  unsigned getCharWidth() const { return BYTE_SIZE; } // FIXME
+  unsigned getCharAlign() const { return BYTE_SIZE; } // FIXME
 
   /// Return the size of 'signed short' and 'unsigned short' for this
   /// target, in bits.

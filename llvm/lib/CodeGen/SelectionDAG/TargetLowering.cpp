@@ -195,7 +195,7 @@ bool TargetLowering::findOptimalMemOpLowering(
     VT = MVT::i64;
     if (Op.isFixedDstAlign())
       while (
-          Op.getDstAlign() < (VT.getSizeInBits() / 8) &&
+          Op.getDstAlign() < (VT.getSizeInBits() / BYTE_SIZE) &&
           !allowsMisalignedMemoryAccesses(VT, DstAS, Op.getDstAlign().value()))
         VT = (MVT::SimpleValueType)(VT.getSimpleVT().SimpleTy - 1);
     assert(VT.isInteger());
@@ -215,7 +215,7 @@ bool TargetLowering::findOptimalMemOpLowering(
   unsigned NumMemOps = 0;
   uint64_t Size = Op.size();
   while (Size) {
-    unsigned VTSize = VT.getSizeInBits() / 8;
+    unsigned VTSize = VT.getSizeInBits() / BYTE_SIZE;
     while (VTSize > Size) {
       // For now, only use non-vector load / store's for the left-over pieces.
       EVT NewVT = VT;
@@ -243,7 +243,7 @@ bool TargetLowering::findOptimalMemOpLowering(
             break;
         } while (!isSafeMemOpType(NewVT.getSimpleVT()));
       }
-      NewVTSize = NewVT.getSizeInBits() / 8;
+      NewVTSize = NewVT.getSizeInBits() / BYTE_SIZE;
 
       // If the new VT cannot cover all of the remaining bits, then consider
       // issuing a (or a pair of) unaligned and overlapping load / store.
@@ -3566,15 +3566,15 @@ SDValue TargetLowering::SimplifySetCC(EVT VT, SDValue N0, SDValue N1,
         if (Lod->getExtensionType() != ISD::NON_EXTLOAD)
           origWidth = Lod->getMemoryVT().getSizeInBits();
         const APInt &Mask = N0.getConstantOperandAPInt(1);
-        for (unsigned width = origWidth / 2; width>=8; width /= 2) {
+        for (unsigned width = origWidth / 2; width>=BYTE_SIZE; width /= 2) {
           APInt newMask = APInt::getLowBitsSet(maskWidth, width);
           for (unsigned offset=0; offset<origWidth/width; offset++) {
             if (Mask.isSubsetOf(newMask)) {
               if (Layout.isLittleEndian())
-                bestOffset = (uint64_t)offset * (width/8);
+                bestOffset = (uint64_t)offset * (width/BYTE_SIZE);
               else
-                bestOffset = (origWidth/width - offset - 1) * (width/8);
-              bestMask = Mask.lshr(offset * (width/8) * 8);
+                bestOffset = (origWidth/width - offset - 1) * (width/BYTE_SIZE);
+              bestMask = Mask.lshr(offset * (width/BYTE_SIZE) * BYTE_SIZE);
               bestWidth = width;
               break;
             }

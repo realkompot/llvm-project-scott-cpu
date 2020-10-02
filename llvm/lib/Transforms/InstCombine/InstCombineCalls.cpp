@@ -100,6 +100,11 @@ static Type *getPromotedType(Type *Ty) {
 }
 
 Instruction *InstCombinerImpl::SimplifyAnyMemTransfer(AnyMemTransferInst *MI) {
+#ifdef WIDE_BYTE
+  // TODO: comment
+  return nullptr;
+#endif
+
   Align DstAlign = getKnownAlignment(MI->getRawDest(), DL, MI, &AC, &DT);
   MaybeAlign CopyDstAlign = MI->getDestAlign();
   if (!CopyDstAlign || *CopyDstAlign < DstAlign) {
@@ -215,6 +220,11 @@ Instruction *InstCombinerImpl::SimplifyAnyMemTransfer(AnyMemTransferInst *MI) {
 }
 
 Instruction *InstCombinerImpl::SimplifyAnyMemSet(AnyMemSetInst *MI) {
+#ifdef WIDE_BYTE
+  // TODO: comment
+  return nullptr;
+#endif
+
   const Align KnownAlignment =
       getKnownAlignment(MI->getDest(), DL, MI, &AC, &DT);
   MaybeAlign MemSetAlign = MI->getDestAlign();

@@ -34,10 +34,13 @@ add_llvm_component_library(LLVMMC
   MCObjectWriter.cpp
   MCRegisterInfo.cpp
   MCSchedule.cpp
+  MCScottEmulatorObjectTargetWriter.cpp
+  MCScottEmulatorStreamer.cpp
   MCSection.cpp
   MCSectionCOFF.cpp
   MCSectionELF.cpp
   MCSectionMachO.cpp
+  MCSectionScottEmulator.cpp
   MCSectionWasm.cpp
   MCSectionXCOFF.cpp
   MCStreamer.cpp
@@ -56,6 +59,7 @@ add_llvm_component_library(LLVMMC
   MCXCOFFObjectTargetWriter.cpp
   MCXCOFFStreamer.cpp
   MachObjectWriter.cpp
+  ScottEmulatorObjectWriter.cpp
   StringTableBuilder.cpp
   SubtargetFeature.cpp
   WasmObjectWriter.cpp

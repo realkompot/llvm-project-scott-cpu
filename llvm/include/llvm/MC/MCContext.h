@@ -52,6 +52,7 @@ namespace llvm {
   class MCSectionELF;
   class MCSectionMachO;
   class MCSectionWasm;
+  class MCSectionScottEmulator;
   class MCSectionXCOFF;
   class MCStreamer;
   class MCSymbol;
@@ -96,6 +97,7 @@ namespace llvm {
     SpecificBumpPtrAllocator<MCSectionELF> ELFAllocator;
     SpecificBumpPtrAllocator<MCSectionMachO> MachOAllocator;
     SpecificBumpPtrAllocator<MCSectionWasm> WasmAllocator;
+    SpecificBumpPtrAllocator<MCSectionScottEmulator> ScottEmulatorAllocator;
     SpecificBumpPtrAllocator<MCSectionXCOFF> XCOFFAllocator;
     SpecificBumpPtrAllocator<MCInst> MCInstAllocator;
 
@@ -265,6 +267,17 @@ namespace llvm {
       }
     };
 
+    struct ScottEmulatorSectionKey {
+      std::string SectionName;
+
+      explicit ScottEmulatorSectionKey(StringRef SectionName)
+          : SectionName(SectionName) {}
+
+      bool operator<(const ScottEmulatorSectionKey &Other) const {
+        return SectionName < Other.SectionName;
+      }
+    };
+
     struct XCOFFSectionKey {
       std::string SectionName;
       XCOFF::StorageMappingClass MappingClass;
@@ -283,6 +296,8 @@ namespace llvm {
     std::map<ELFSectionKey, MCSectionELF *> ELFUniquingMap;
     std::map<COFFSectionKey, MCSectionCOFF *> COFFUniquingMap;
     std::map<WasmSectionKey, MCSectionWasm *> WasmUniquingMap;
+    std::map<ScottEmulatorSectionKey, MCSectionScottEmulator *> ScottEmulatorUniquingMap;
+
     std::map<XCOFFSectionKey, MCSectionXCOFF *> XCOFFUniquingMap;
     StringMap<bool> RelSecNames;
 
@@ -561,6 +576,8 @@ namespace llvm {
     MCSectionWasm *getWasmSection(const Twine &Section, SectionKind K,
                                   const MCSymbolWasm *Group, unsigned UniqueID,
                                   const char *BeginSymName);
+
+    MCSectionScottEmulator *getScottEmulatorSection(const Twine &Section, SectionKind K);
 
     MCSectionXCOFF *getXCOFFSection(StringRef Section,
                                     XCOFF::StorageMappingClass MappingClass,

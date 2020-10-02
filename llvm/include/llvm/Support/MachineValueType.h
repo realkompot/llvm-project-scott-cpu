@@ -935,7 +935,7 @@ namespace llvm {
     /// base size.
     TypeSize getStoreSize() const {
       TypeSize BaseSize = getSizeInBits();
-      return {(BaseSize.getKnownMinSize() + 7) / 8, BaseSize.isScalable()};
+      return {(BaseSize.getKnownMinSize() + (BYTE_SIZE - 1)) / BYTE_SIZE, BaseSize.isScalable()};
     }
 
     /// Return the number of bits overwritten by a store of the specified value
@@ -945,7 +945,7 @@ namespace llvm {
     /// be set and the runtime size will be a positive integer multiple of the
     /// base size.
     TypeSize getStoreSizeInBits() const {
-      return getStoreSize() * 8;
+      return getStoreSize() * BYTE_SIZE;
     }
 
     /// Returns true if the number of bits for the type is a multiple of an
